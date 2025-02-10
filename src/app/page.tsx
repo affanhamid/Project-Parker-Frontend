@@ -11,7 +11,9 @@ export default function Home() {
         <Chats />
         <ChatWindow />
       </div>
-      <ChatDetails />
+      <div className="w-[300px]">
+        <ChatDetails />
+      </div>
     </main>
   );
 }

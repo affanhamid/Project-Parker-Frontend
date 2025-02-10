@@ -27,9 +27,9 @@ const Chats = () => {
 const ChatItem = ({ question, time }: { question: string; time: string }) => {
   return (
     <div className="flex items-center p-3 rounded-lg gap-3 cursor-pointer">
-      <FaCommentDots className="w-10 h-10 text-white" />
+      <FaCommentDots className="w-5 h-5 text-white" />
       <div className="flex flex-col">
-        <span className="font-medium whitespace-nowrap">{question}</span>
+        <span className="text-sm">{question}</span>
         <span className="text-sm opacity-70">{time} ago</span>
       </div>
     </div>

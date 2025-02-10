@@ -3,12 +3,12 @@ import { FaFolder } from "react-icons/fa"; // Folder icon for subjects
 
 const Sidebar = () => {
   return (
-    <div className="h-screen bg-black flex flex-col px-4 py-7 items-center">
+    <div className="h-screen bg-black flex flex-col px-2 py-7 items-center">
       {/* Logo */}
-      <div className="text-lg font-bold text-center mb-4">PARKER</div>
+      <div className="text-md font-bold text-center mb-4">PARKER</div>
 
       {/* Subject List */}
-      <div className="flex flex-1 flex-col gap-4 pt-40">
+      <div className="flex flex-1 flex-col gap-4 items-center justify-center">
         <Subject name="MA100" />
         <Subject name="MA102" />
         <Subject name="EC1A3" />
@@ -17,7 +17,7 @@ const Sidebar = () => {
 
       {/* Settings */}
       <div className="text-center mt-4">
-        <FaCog size={24} className="mx-auto cursor-pointer" />
+        <FaCog className="w-7 h-7 mx-auto cursor-pointer" />
       </div>
     </div>
   );
