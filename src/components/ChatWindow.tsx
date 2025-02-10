@@ -42,7 +42,7 @@ const ChatWindow = () => {
   const sendMessage = async (input: string, loadingMessageId: number) => {
     console.log("Message sent: ", input);
     try {
-      const response = await fetch("http://localhost:8000/chat", {
+      const response = await fetch("https://affanhamid.com:8000/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
