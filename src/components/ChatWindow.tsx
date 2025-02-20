@@ -41,8 +41,15 @@ const ChatWindow = () => {
 
   const sendMessage = async (input: string, loadingMessageId: number) => {
     console.log("Message sent: ", input);
+
+    let url;
+    if (process.env.NODE_ENV === "development") {
+      url = "http://localhost:8000";
+    } else if (process.env.NODE_ENV === "production") {
+      url = "https://affanhamid.com:8000";
+    }
     try {
-      const response = await fetch("https://affanhamid.com:8000/chat", {
+      const response = await fetch(`${url}/chat`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
