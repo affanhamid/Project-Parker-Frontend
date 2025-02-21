@@ -43,9 +43,10 @@ const ChatWindow = () => {
     console.log("Message sent: ", input);
 
     let url;
+    console.log(process.env.NODE_ENV);
     if (process.env.NODE_ENV === "development") {
       url = "http://localhost:8000";
-    } else if (process.env.NODE_ENV === "production") {
+    } else {
       url = "https://affanhamid.com:8000";
     }
     try {
