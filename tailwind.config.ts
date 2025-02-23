@@ -16,5 +16,5 @@ export default {
       transparent: "#00000000",
     },
   },
-  plugins: [],
+  plugins: [require("@tailwindcss/typography")],
 } satisfies Config;

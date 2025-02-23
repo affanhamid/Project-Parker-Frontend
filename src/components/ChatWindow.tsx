@@ -1,6 +1,7 @@
 "use client";
 import { FaUser, FaRobot, FaPaperPlane } from "react-icons/fa"; // Icons for User, AI, and Send Button
 import { useState } from "react";
+import MarkdownRenderer from "@/components/MarkdownRenderer"
 
 interface MessageInterface {
   id: number;
@@ -55,7 +56,7 @@ const ChatWindow = () => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ message: input }),
+        body: JSON.stringify({ query: input }),
       });
 
       if (!response.ok) {
@@ -69,7 +70,7 @@ const ChatWindow = () => {
       setMessages((prevMessages) =>
         prevMessages.map((msg) =>
           msg.id === loadingMessageId
-            ? { ...msg, text: data.answer, loading: false }
+            ? { ...msg, text: data.response, loading: false }
             : msg,
         ),
       );
@@ -146,7 +147,7 @@ const ChatBubble = ({
       <div
         className={`p-3 rounded-lg max-w-[60%] ${isUser ? "bg-purple" : "bg-gray"}`}
       >
-        {loading ? <LoadingDots /> : text}
+        {loading ? <LoadingDots /> : <MarkdownRenderer markdown={text} />}
       </div>
       {isUser && <FaUser size={20} className="ml-2 text-white" />}
     </div>
