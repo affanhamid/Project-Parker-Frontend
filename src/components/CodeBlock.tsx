@@ -1,21 +1,29 @@
 "use client";
 import React, { useState } from "react";
+import { ExtraProps } from "react-markdown";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/cjs/styles/prism";
 
-function CodeBlock({ className, children, ...props }) {
+type CodeBlockProps = {
+  props: React.ClassAttributes<HTMLElement> &
+    React.HTMLAttributes<HTMLElement> &
+    ExtraProps;
+};
+
+const CodeBlock = (props: CodeBlockProps) => {
+  const { children, className, ...rest } = props.props;
   const language = className?.replace("language-", "") || "";
   const [copyState, setCopyState] = useState(false);
 
   const copyToClipboard = () => {
     const codeToCopy = Array.isArray(children) ? children.join("\n") : children;
 
-    navigator.clipboard.writeText(codeToCopy);
+    navigator.clipboard.writeText(codeToCopy!.toString());
     setCopyState(true);
   };
 
   return (
-    <p className="relative group my-4">
+    <div className="relative group my-4">
       <button
         onClick={copyToClipboard}
         className="
@@ -31,17 +39,17 @@ function CodeBlock({ className, children, ...props }) {
         {copyState ? "Copied!" : "Copy"}
       </button>
 
-      {/* Syntax highlighted code */}
       <SyntaxHighlighter
+        {...rest}
         language={language}
         style={vscDarkPlus}
-        PreTag="div"
+        PreTag="pre"
         {...props}
       >
         {String(children).replace(/\n$/, "")}
       </SyntaxHighlighter>
-    </p>
+    </div>
   );
-}
+};
 
 export default CodeBlock;

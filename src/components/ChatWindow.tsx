@@ -1,30 +1,32 @@
 "use client";
-import { FaUser, FaRobot, FaPaperPlane } from "react-icons/fa"; // Icons for User, AI, and Send Button
+import { FaUser, FaRobot } from "react-icons/fa";
 import { useState } from "react";
-import MarkdownRenderer from "@/components/MarkdownRenderer"
+import MarkdownRenderer from "@/components/MarkdownRenderer";
+import MessageInput from "@/components/MessageInput";
 
 interface MessageInterface {
   id: number;
   text: string;
   sender: "user" | "ai";
+  image?: string;
   loading?: boolean;
 }
 
 const ChatWindow = () => {
   const [messages, setMessages] = useState<MessageInterface[]>([]);
   const [input, setInput] = useState("");
+  const [image, setImage] = useState<string | null>(null);
 
   const handleUserInputMessage = () => {
-    if (input.trim() === "") return;
+    if (input.trim() === "" && !image) return;
 
-    // Create the user message.
     const userMessage: MessageInterface = {
       id: messages.length + 1,
       text: input,
       sender: "user",
+      image: image ?? undefined,
     };
 
-    // Create a loading message placeholder for the AI response.
     const loadingMessage: MessageInterface = {
       id: messages.length + 2,
       text: "",
@@ -32,41 +34,29 @@ const ChatWindow = () => {
       loading: true,
     };
 
-    // Update messages with both the user's message and the loading placeholder.
     setMessages([...messages, userMessage, loadingMessage]);
-
-    // Send the message and pass the loading message's id so we can update it later.
     sendMessage(input, loadingMessage.id);
     setInput("");
+    setImage(null);
   };
 
   const sendMessage = async (input: string, loadingMessageId: number) => {
     console.log("Message sent: ", input);
+    const url =
+      process.env.NODE_ENV === "development"
+        ? "http://localhost:8000"
+        : "https://affanhamid.com:8000";
 
-    let url;
-    console.log(process.env.NODE_ENV);
-    if (process.env.NODE_ENV === "development") {
-      url = "http://localhost:8000";
-    } else {
-      url = "https://affanhamid.com:8000";
-    }
     try {
       const response = await fetch(`${url}/chat`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ query: input }),
       });
 
-      if (!response.ok) {
-        throw new Error(`Server error: ${response.status}`);
-      }
+      if (!response.ok) throw new Error(`Server error: ${response.status}`);
 
       const data = await response.json();
-      console.log("Server response:", data);
-
-      // Replace the loading message with the actual AI answer.
       setMessages((prevMessages) =>
         prevMessages.map((msg) =>
           msg.id === loadingMessageId
@@ -76,7 +66,6 @@ const ChatWindow = () => {
       );
     } catch (error) {
       console.error("Error sending message:", error);
-      // Update the loading message to show an error message.
       setMessages((prevMessages) =>
         prevMessages.map((msg) =>
           msg.id === loadingMessageId
@@ -89,55 +78,40 @@ const ChatWindow = () => {
 
   return (
     <div className="flex flex-col h-screen w-full">
-      {/* Chat Header */}
       <div className="p-4 text-lg font-bold">Parker Chat</div>
-
-      {/* Chat Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((msg) => (
           <ChatBubble
             key={msg.id}
             text={msg.text}
             sender={msg.sender}
+            image={msg.image}
             loading={msg.loading}
           />
         ))}
       </div>
-
-      {/* Message Input */}
-      <div className="p-4 flex items-center">
-        <input
-          type="text"
-          className="flex-1 p-2 bg-transparent rounded-lg outline-none"
-          placeholder="Type your message..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={(e) => e.key === "Enter" && handleUserInputMessage()}
-        />
-        <button
-          onClick={handleUserInputMessage}
-          className="ml-3 p-2 rounded-lg"
-        >
-          <FaPaperPlane size={18} />
-        </button>
-      </div>
+      <MessageInput
+        input={input}
+        setInput={setInput}
+        image={image}
+        setImage={setImage}
+        handleUserInputMessage={handleUserInputMessage}
+      />
     </div>
   );
 };
 
-// A simple component for the loading dots animation.
-const LoadingDots = () => {
-  return <span className="animate-pulse">...</span>;
-};
+const LoadingDots = () => <span className="animate-pulse">...</span>;
 
-// ChatBubble component now accepts an optional "loading" prop.
 const ChatBubble = ({
   text,
   sender,
+  image,
   loading,
 }: {
   text: string;
   sender: string;
+  image?: string;
   loading?: boolean;
 }) => {
   const isUser = sender === "user";
@@ -147,6 +121,9 @@ const ChatBubble = ({
       <div
         className={`p-3 rounded-lg max-w-[60%] ${isUser ? "bg-purple" : "bg-gray"}`}
       >
+        {image && (
+          <img src={image} alt="Uploaded" className="mt-2 max-w-full rounded" />
+        )}
         {loading ? <LoadingDots /> : <MarkdownRenderer markdown={text} />}
       </div>
       {isUser && <FaUser size={20} className="ml-2 text-white" />}
